@@ -1,6 +1,7 @@
 #pragma once
 #include "matrix.h"
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -21,10 +22,12 @@ void ReadDataMNIST(Matrix& inputLayer, vector <int>& trainLabel, int numData)
 {
     // Read picture pixel
     inputLayer.data.resize(0);
+    inputLayer.row = numData;
+    inputLayer.col = 784;
     ifstream file("./mnist/train-images.idx3-ubyte", ios::binary);
     if (file.is_open())
     {
-        cout << "reading train pictures! \n";
+        cout << "reading train pictures... \n";
         int magic_number = 0;
         int number_of_images = 0;
         int n_rows = 0;
@@ -61,7 +64,7 @@ void ReadDataMNIST(Matrix& inputLayer, vector <int>& trainLabel, int numData)
     ifstream file2("./mnist/train-labels.idx1-ubyte", ios::binary);
     if (file2.is_open())
     {
-        cout << "reading train labels! \n";
+        cout << "reading train labels... \n";
         int magic_number = 0;
         int number_of_items = 0;
 
@@ -82,4 +85,46 @@ void ReadDataMNIST(Matrix& inputLayer, vector <int>& trainLabel, int numData)
         cout << "Could not open label file! \n";
     }
     file2.close();
+}
+
+string CIFAR10_file[5] = { "./cifar-10/data_batch_1.bin","./cifar-10/data_batch_2.bin","./cifar-10/data_batch_3.bin",
+                          "./cifar-10/data_batch_4.bin","./cifar-10/data_batch_5.bin" };
+
+
+void ReadDataCIFAR10(Matrix& inputLayer, vector <int>& trainLabel, int numFiles, int numDataEachFile)
+{
+    int numberOfData = numDataEachFile;
+    int numberOfFile = numFiles;
+    int dim = 3072;
+    ifstream file3;
+
+    inputLayer.data.resize(0);
+    inputLayer.row = numFiles * numDataEachFile;
+    inputLayer.col = dim;
+
+    vector <double> data;
+    vector <int> labels;
+    for (int file_idx = 0; file_idx < numberOfFile; file_idx++)
+    {
+        file3.open(CIFAR10_file[file_idx], ios::binary);
+        if (file3.is_open())
+        {
+            cout << "file opened! \n";
+            unsigned char label = 0;
+            for (int cnt = file_idx * numberOfData; cnt < (file_idx + 1) * numberOfData; cnt++)
+            {
+                file3.read((char*)&label, sizeof(label));
+                labels.push_back((int)label);
+                for (int i = 0; i < dim; ++i)
+                {
+                    unsigned char pixel = 0;
+                    file3.read((char*)&pixel, sizeof(pixel));
+                    //m_dataPoints[cnt * dim + i] = (int)pixel;
+                    data.push_back((double)pixel / 255.0);
+                }
+            }
+        }
+        file3.close();
+    }
+    std::copy(data.begin(), data.end(), inputLayer.data.begin());
 }

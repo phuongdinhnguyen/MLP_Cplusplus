@@ -1,57 +1,40 @@
 #include <iostream>
+#include <random>
 #include <chrono>
 #include <omp.h>
 
-#define ROUND_UP(x, s) (((x)+((s)-1)) & -(s))
-
 using namespace std;
-
-inline void transpose_scalar_block(float *A, float *B, const int lda, const int ldb, const int block_size) {
-    #pragma omp parallel for
-    for(int i=0; i<block_size; i++) {
-        for(int j=0; j<block_size; j++) {
-            B[j*ldb + i] = A[i*lda +j];
-        }
-    }
-}
-
-inline void transpose_block(float *A, float *B, const int n, const int m, const int lda, const int ldb, const int block_size) {
-    #pragma omp parallel for
-    for(int i=0; i<n; i+=block_size) {
-        for(int j=0; j<m; j+=block_size) {
-            transpose_scalar_block(&A[i*lda +j], &B[j*ldb + i], lda, ldb, block_size);
-        }
-    }
-}
 
 int main()
 {
-    const int n = 2;
-    const int m = 3;
-    int lda = ROUND_UP(m, 16);
-    int ldb = ROUND_UP(n, 16);
+    cout << "start\n";
+    const int NROWS = 10;
+    const int NCOLS = 60000;    
 
-    cout << "lda = " << lda << endl;
-    cout << "ldb = " << ldb << endl;
+    // Trans = (float*)malloc(sizeof(float)*NROWS*NCOLS);
+    // Matrix = (float*)malloc(sizeof(float)*NROWS*NCOLS);
 
-    float *A = (float*)_mm_malloc(sizeof(float)*lda*ldb, 64);
-    float *B = (float*)_mm_malloc(sizeof(float)*lda*ldb, 64);
+    float Matrix[10][60000];
+    float Trans[10][60000];
 
-    A[0] = 1; A[1] = 2; A[2] = 3;
-    A[3] = 4; A[4] = 5; A[5] = 6;
+    int maxLength = 10000;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    static std::default_random_engine generator(45);
+    std::uniform_int_distribution<int> distribution(0, maxLength);
 
-    auto startTime = std::chrono::steady_clock::now();
-    transpose_block(A,B,n,m,lda,ldb,16);
+    int i,j;
+    for (i = 0 ; i < NROWS ; i++)
+    for (j = 0 ; j < NCOLS ; j++)
+    Matrix[i][j] = distribution(generator) *1.0 / maxLength;
+
+    auto startTime = std::chrono::steady_clock::now();  
+    for (i = 0 ; i < NROWS ; i = i + 1)
+    for (j = 0 ; j < NCOLS ; j = j + 1)
+        Trans[j][i] = Matrix[i][j];
+
     auto endTime = std::chrono::steady_clock::now();
     auto encTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    cout << "Total time for this function: " << encTime / 1000.0 << " sec." << endl;    
 
-    cout << "Total run time: " << encTime / 1000.0 << " sec." << endl;
-    
-    for (int i = 0 ; i < 64 ; i++)
-    {
-        if (i%15==0) cout << endl;
-        cout << B[i] << " ";
-    }
-    cout << endl;
     return 0;
 }

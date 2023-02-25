@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <omp.h>
+#include <random>
 
 #include <time.h>
 #include <chrono>
@@ -12,24 +13,28 @@
 using namespace std;
 
 #define NUM_THREAD 6
-
+#define DEBUG 0
 //  Define 2D Matrix
 struct Matrix {
     int row;
     int col;
-    vector <float> data;
+    vector <double> data;
     Matrix() {}
     Matrix(int x, int y) { row = x, col = y; data.resize(row * col); }
-    float at(int x, int y)
+    double at(int x, int y)
     {
         // extract data at location (x,y)
         return data[x * col + y];
+    }
+
+    void initSize(int x, int y)
+    {
+        row = x, col = y; data.resize(row * col);
     }
 };
 
 namespace matrix
 {
-
     void CheckErr(int x, int y, string errThrow)
     {
         try
@@ -39,6 +44,19 @@ namespace matrix
         catch (const std::exception& e)
         {
             std::cout << errThrow << std::endl;
+        }
+    }
+
+    void RandMatrix(Matrix& x)
+    {
+        int maxLength = 10000;
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        static std::default_random_engine generator(45);
+        std::uniform_int_distribution<int> distribution(0, maxLength);
+
+        for (int i = 0; i < x.col * x.row; i++)
+        {
+            x.data[i] = distribution(generator) * 1.0 / maxLength - 0.5;
         }
     }
 
@@ -62,18 +80,27 @@ namespace matrix
 
     Matrix transpose(Matrix x)
     {
+#if DEBUG
+        auto startTime = std::chrono::steady_clock::now();
+#endif
         Matrix res(x.col, x.row);
         res.data.resize(x.col * x.row);
-        #pragma omp parallel for num_threads(NUM_THREAD)
-        for (int i = 0; i < x.row; i++)
+        int i, j;
+        #pragma omp parallel for private(j) num_threads(NUM_THREAD)
+        for (i = 0; i < x.row; i++)
         {
-            for (int j = 0; j < x.col; j++)
+            for (j = 0; j < x.col; j++)
                 res.data[j * res.col + i] = x.at(i, j);
         }
+#if DEBUG
+        auto endTime = std::chrono::steady_clock::now();
+        auto encTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+        cout << "Total time for transpose: " << encTime / 1000.0 << " sec." << endl;
+#endif
         return res;
     }
 
-    Matrix matrix_dot(Matrix x1, Matrix x2)
+    Matrix matrix_dot(Matrix& x1, Matrix& x2)
     {
         // dot operator for matrix: (x1.row, x1.col) . (x2.row, x2.col)
 
@@ -84,17 +111,18 @@ namespace matrix
         
         Matrix x2_t = matrix::transpose(x2);
         
-
+        
         Matrix res(x1.row, x2.col);
-
+#if DEBUG
         auto startTime = std::chrono::steady_clock::now();
+#endif
         #pragma omp parallel
         {
             int i, j, k;
             #pragma omp for
             for (i = 0; i < res.row; i++) { 
                 for (j = 0; j < res.col; j++) {
-                    float dot  = 0;
+                    double dot  = 0;
                     for (k = 0; k < x2_t.col; k++) {
                         dot += x1.at(i,k)*x2_t.at(j,k);
                     } 
@@ -102,10 +130,11 @@ namespace matrix
                 }
             }
         }
+#if DEBUG
         auto endTime = std::chrono::steady_clock::now();
         auto encTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-        cout << "Total time for this function: " << encTime / 1000.0 << " sec." << endl;
-
+        cout << "Total time for dot function: " << encTime / 1000.0 << " sec." << endl;
+#endif
         return res;
     }
 
@@ -123,7 +152,6 @@ namespace matrix
         for (int i = 0; i < res.row; i++)
             for (int j = 0; j < res.col; j++)
                 res.data[i * res.col + j] = x1.at(i, j) + x2.at(i, j);
-
         return res;
     }
 
@@ -136,7 +164,7 @@ namespace matrix
         CheckErr(x1.col, x2.col, "Subtract of 2 matrix not same col!");
 
         // Do the plus
-        Matrix res(x1.row, x1.col);
+        Matrix res= x1;
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int i = 0; i < res.row; i++)
             for (int j = 0; j < res.col; j++)
@@ -146,10 +174,9 @@ namespace matrix
     }
 
     // Divide all matrix with a number
-    Matrix divAll(Matrix x, float num)
+    Matrix divAll(Matrix x, double num)
     {
         Matrix res = x;
-
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int i = 0; i < res.col * res.row; i++)
         {
@@ -159,7 +186,7 @@ namespace matrix
     }
 
     // Multiply all matrix with a number
-    Matrix mulAll(Matrix x, float num)
+    Matrix mulAll(Matrix x, double num)
     {
         Matrix res = x;
 #pragma omp parallel for num_threads(NUM_THREAD)
@@ -171,7 +198,7 @@ namespace matrix
     }
 
     // Minus all matrix with a number
-    Matrix minusAll(Matrix x, float num)
+    Matrix minusAll(Matrix x, double num)
     {
         Matrix res = x;
 #pragma omp parallel for num_threads(NUM_THREAD)
@@ -204,7 +231,7 @@ namespace matrix
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int rowIdx = 0; rowIdx < x.row; rowIdx++)
         {
-            float sum = 0;
+            double sum = 0;
             for (int colIdx = 0; colIdx < x.col; colIdx++)
             {
                 sum += x.at(rowIdx, colIdx);
@@ -216,9 +243,9 @@ namespace matrix
     }
 
     // Sum all elements in matrix
-    float sumAllMatrix(Matrix x)
+    double sumAllMatrix(Matrix x)
     {
-        float sum = 0;
+        double sum = 0;
         for (int i = 0; i < x.col * x.row; i++)
             sum += x.data[i];
 

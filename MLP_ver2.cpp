@@ -209,6 +209,7 @@ public:
     double learningRate;
     Matrix inputLayer;
 
+    int runValidate = 0;
     Matrix validateData;
     vector <int> validateLabel;
 
@@ -248,6 +249,7 @@ public:
         // Extract validation
         if (doVal)
         {
+            runValidate = 1;
             int numValData = 5000;
             // extract validate data (pics)
             validateData.data.assign(inputLayer.data.end() - numValData * dataDim, inputLayer.data.end());
@@ -356,24 +358,32 @@ public:
             }
             //cout << "\nTotal loss:" << totalLoss << endl;
             //file << "loss: " << totalLoss << endl;
+      
+            // train accuracy
+            cout << " train ";
+            layer[0] = originalInputLayer;
+            layer[0].A = matrix::transpose(layer[0].A);
+            for (int i = 0; i < numLayer() - 2; i++)
+            {
+                layer[i + 1].Forward(layer[i]);
+            }
+            CheckAccuracy(layer[posOutputLayer].A, label, layer[0].numData);
+
+            // val accuracy
+            if (runValidate)
+            {
+                cout << " val ";
+                layer[0].A = matrix::transpose(validateData);
+                for (int i = 0; i < numLayer() - 2; i++)
+                {
+                    layer[i + 1].Forward(layer[i]);
+                }
+                CheckAccuracy(layer[posOutputLayer].A, validateLabel, validateData.row);
+            }
+            
         }
 
-        // train accuracy
-        layer[0] = originalInputLayer;
-        layer[0].A = matrix::transpose(layer[0].A);
-        for (int i = 0; i < numLayer() - 2; i++)
-        {
-            layer[i + 1].Forward(layer[i]);
-        }
-        CheckAccuracy(layer[posOutputLayer].A, label, layer[0].numData);
-
-        // val accuracy
-        layer[0].A = matrix::transpose(validateData);
-        for (int i = 0; i < numLayer() - 2; i++)
-        {
-            layer[i + 1].Forward(layer[i]);
-        }
-        CheckAccuracy(layer[posOutputLayer].A, validateLabel, validateData.row);
+        
     }
 
     
@@ -424,7 +434,7 @@ int main()
     MLP.setLearningRate(0.001);
     MLP.fit();
     
-    cout << "program exited!" << endl;
+    cout << "\n****program finished!****\n" << endl;
     return 0;
 }
 

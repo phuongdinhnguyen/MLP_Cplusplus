@@ -165,28 +165,16 @@ public:
 
     void update(double learningRate)
     {
-        double momentum = 0.000;
+        double momentum = 0.1;
         // Update weights and bias, with learning rate
         
-
         W = matrix::matrix_minus(W, matrix::mulAll(dW, learningRate));
         b = matrix::minusAll(b, learningRate * db);
 
-        //if (momentum > 0 && layerPos > 0)
-        {
-            
-            W = matrix::matrix_minus(W, prev_dW);
-            b = matrix::minusAll(b, prev_db);
-            prev_dW = matrix::matrix_plus(dW, matrix::mulAll(prev_dW, momentum));
-            prev_db = db + prev_db * momentum;
-            //prev_dW = matrix::mulAll(prev_dW, momentum);
-            //prev_db = prev_db * momentum;
-        }
-        //else if (layerPos == 0)
-        //{
-        //    prev_dW = matrix::mulAll(dW, learningRate);
-        //    prev_db = learningRate * db;
-        //}
+        W = matrix::matrix_minus(W, prev_dW);
+        b = matrix::minusAll(b, prev_db);
+        prev_dW = matrix::matrix_plus(dW, matrix::mulAll(prev_dW, momentum));
+        prev_db = db + prev_db * momentum;
     }
 };
 
@@ -198,7 +186,7 @@ public:
     {
         //A = matrix::transpose(inputLayer);
         A = inputLayer;
-        numData = _numData; 
+        numData = _numData;
     }
 };
 ofstream file("output.txt");
@@ -209,7 +197,6 @@ public:
     double learningRate;
     Matrix inputLayer;
 
-    int runValidate = 0;
     Matrix validateData;
     vector <int> validateLabel;
 
@@ -225,6 +212,7 @@ public:
     vector <int> label;
 
     int numLayer(){return layer.size();}
+    void setDataInputDim(int _inputDim) { dataDim = _inputDim; }
     void setEpoch(int _numEpoch) { numEpoch = _numEpoch; }
     void setLearningRate(double _learningRate) { learningRate = _learningRate; }
     void setBatchSize(int _batchSize) { batchSize = _batchSize; }
@@ -249,7 +237,6 @@ public:
         // Extract validation
         if (doVal)
         {
-            runValidate = 1;
             int numValData = 5000;
             // extract validate data (pics)
             validateData.data.assign(inputLayer.data.end() - numValData * dataDim, inputLayer.data.end());
@@ -257,12 +244,19 @@ public:
             validateData.col = dataDim;
 
             // delete last numbers of data already being used for validate
+            
+            //cout << "dataDim = " << dataDim << endl;
             int numInputData = layer[0].numData;
-            inputLayer.data.resize(numInputData - numValData * dataDim);
+            //cout << "num input data: " << numInputData << endl;
+            //cout << "input Layer size: " << inputLayer.data.size() << endl;
+            //cout << (numInputData - numValData) * dataDim << endl;
+            inputLayer.data.resize((numInputData - numValData) * dataDim);
+            //cout << "input Layer size: " << inputLayer.data.size() << endl;
             inputLayer.row = numInputData - numValData;
 
             // edit first layer ~ input layer:
             layer[0].numData = numInputData - numValData;
+            layer[0].A = inputLayer;
 
             // extract validate label
             validateLabel.assign(label.end() - numValData, label.end());
@@ -308,6 +302,7 @@ public:
         for (int epoch = 0 ; epoch < numEpoch ; epoch++)
         {
             cout << "(Epoch " << epoch << " / " << numEpoch << ")" << endl;
+            file << "(Epoch " << epoch << " / " << numEpoch << ")" << endl;
             //file << "epoch: " << epoch << endl;
             //int batch_size = originalInputLayer.numData;
             int batch_size = 100;
@@ -359,28 +354,27 @@ public:
             //cout << "\nTotal loss:" << totalLoss << endl;
             //file << "loss: " << totalLoss << endl;
       
-            // train accuracy
-            cout << " train ";
-            layer[0] = originalInputLayer;
-            layer[0].A = matrix::transpose(layer[0].A);
+            ////////////////// train accuracy/////////////////////////
+            // (temporary remove because using too much memory)
+            //cout << "train ";
+            //layer[0] = originalInputLayer;
+            //layer[0].A = matrix::transpose(layer[0].A);
+            //for (int i = 0; i < numLayer() - 2; i++)
+            //{
+            //    layer[i + 1].Forward(layer[i]);
+            //}
+            //CheckAccuracy(layer[posOutputLayer].A, label, layer[0].numData);
+
+            ////////////////// val accuracy  ///////////////////////////
+            cout << " val ";
+            layer[0].A = matrix::transpose(validateData);
             for (int i = 0; i < numLayer() - 2; i++)
             {
                 layer[i + 1].Forward(layer[i]);
             }
-            CheckAccuracy(layer[posOutputLayer].A, label, layer[0].numData);
-
-            // val accuracy
-            if (runValidate)
-            {
-                cout << " val ";
-                layer[0].A = matrix::transpose(validateData);
-                for (int i = 0; i < numLayer() - 2; i++)
-                {
-                    layer[i + 1].Forward(layer[i]);
-                }
-                CheckAccuracy(layer[posOutputLayer].A, validateLabel, validateData.row);
-            }
-            
+            double valAcc = CheckAccuracy(layer[posOutputLayer].A, validateLabel, validateData.row);
+            file << "validate accuracy: " << valAcc << endl;
+            cout << "\n";
         }
 
         
@@ -423,6 +417,7 @@ int main()
     //ReadDataCIFAR10(MLP.inputLayer, MLP.label, numFiles, numDataEachFile);
     MLP.readData(numFiles, numDataEachFile);
     MLP.setEpoch(40);
+    MLP.setDataInputDim(dataDim);
     MLP.addLayer(InputLayer(numData, dataDim, MLP.inputLayer));
     MLP.addLayer(Layer(dataDim, 100, AF_ReLU));
     MLP.addLayer(Layer(100, 100, AF_ReLU));
@@ -430,11 +425,11 @@ int main()
     //MLP.addLayer(Layer(100, 100, AF_ReLU));
     //MLP.addLayer(Layer(100, 100, AF_ReLU));
     MLP.addLayer(Layer(100, 10, AF_Softmax));
-    MLP.initParams(0);
-    MLP.setLearningRate(0.001);
+    MLP.initParams(1);
+    MLP.setLearningRate(0.0001);
     MLP.fit();
     
-    cout << "\n****program finished!****\n" << endl;
+    cout << "program exited!" << endl;
     return 0;
 }
 

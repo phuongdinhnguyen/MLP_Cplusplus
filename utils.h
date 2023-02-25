@@ -35,7 +35,7 @@ Matrix OneHotCoding(vector<int> label, int numClass)
     return res;
 }
 
-void CheckAccuracy(Matrix outputLayer, vector <int> trainLabel, int numData)
+double CheckAccuracy(Matrix outputLayer, vector <int> trainLabel, int numData)
 {
     // MNIST output layer should be: 10 x numData
     double totalAcc = 0;
@@ -48,5 +48,6 @@ void CheckAccuracy(Matrix outputLayer, vector <int> trainLabel, int numData)
         }
         totalAcc += (trainLabel[colIdx] == convertToLabel(data));
     }
-    cout << "accuracy: " << totalAcc / numData << endl;
+    cout << "accuracy: " << totalAcc / numData;
+    return totalAcc / numData;
 }

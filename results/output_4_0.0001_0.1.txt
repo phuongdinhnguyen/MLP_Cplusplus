@@ -1,0 +1,480 @@
+(Epoch 0 / 40)
+(Iteration 0 / 450) loss:15.8054
+(Iteration 45 / 450) loss:0.735222
+(Iteration 90 / 450) loss:0.524241
+(Iteration 135 / 450) loss:0.401703
+(Iteration 180 / 450) loss:0.344766
+(Iteration 225 / 450) loss:0.262026
+(Iteration 270 / 450) loss:0.287057
+(Iteration 315 / 450) loss:0.294173
+(Iteration 360 / 450) loss:0.280355
+(Iteration 405 / 450) loss:0.248491
+validate accuracy: 0.1654
+(Epoch 1 / 40)
+(Iteration 0 / 450) loss:0.247507
+(Iteration 45 / 450) loss:0.251384
+(Iteration 90 / 450) loss:0.277808
+(Iteration 135 / 450) loss:0.247938
+(Iteration 180 / 450) loss:0.245815
+(Iteration 225 / 450) loss:0.225611
+(Iteration 270 / 450) loss:0.241334
+(Iteration 315 / 450) loss:0.24677
+(Iteration 360 / 450) loss:0.244977
+(Iteration 405 / 450) loss:0.222449
+validate accuracy: 0.194
+(Epoch 2 / 40)
+(Iteration 0 / 450) loss:0.231519
+(Iteration 45 / 450) loss:0.229783
+(Iteration 90 / 450) loss:0.248512
+(Iteration 135 / 450) loss:0.230843
+(Iteration 180 / 450) loss:0.224206
+(Iteration 225 / 450) loss:0.2165
+(Iteration 270 / 450) loss:0.228868
+(Iteration 315 / 450) loss:0.231842
+(Iteration 360 / 450) loss:0.237412
+(Iteration 405 / 450) loss:0.216118
+validate accuracy: 0.2094
+(Epoch 3 / 40)
+(Iteration 0 / 450) loss:0.225063
+(Iteration 45 / 450) loss:0.218123
+(Iteration 90 / 450) loss:0.238626
+(Iteration 135 / 450) loss:0.220635
+(Iteration 180 / 450) loss:0.212168
+(Iteration 225 / 450) loss:0.209827
+(Iteration 270 / 450) loss:0.223329
+(Iteration 315 / 450) loss:0.224191
+(Iteration 360 / 450) loss:0.235892
+(Iteration 405 / 450) loss:0.209452
+validate accuracy: 0.2214
+(Epoch 4 / 40)
+(Iteration 0 / 450) loss:0.219624
+(Iteration 45 / 450) loss:0.212265
+(Iteration 90 / 450) loss:0.230053
+(Iteration 135 / 450) loss:0.214725
+(Iteration 180 / 450) loss:0.207313
+(Iteration 225 / 450) loss:0.207133
+(Iteration 270 / 450) loss:0.21932
+(Iteration 315 / 450) loss:0.21941
+(Iteration 360 / 450) loss:0.235081
+(Iteration 405 / 450) loss:0.20706
+validate accuracy: 0.2278
+(Epoch 5 / 40)
+(Iteration 0 / 450) loss:0.217797
+(Iteration 45 / 450) loss:0.207873
+(Iteration 90 / 450) loss:0.224335
+(Iteration 135 / 450) loss:0.210934
+(Iteration 180 / 450) loss:0.204628
+(Iteration 225 / 450) loss:0.203373
+(Iteration 270 / 450) loss:0.217108
+(Iteration 315 / 450) loss:0.21416
+(Iteration 360 / 450) loss:0.233452
+(Iteration 405 / 450) loss:0.203686
+validate accuracy: 0.228
+(Epoch 6 / 40)
+(Iteration 0 / 450) loss:0.215655
+(Iteration 45 / 450) loss:0.20567
+(Iteration 90 / 450) loss:0.219685
+(Iteration 135 / 450) loss:0.209
+(Iteration 180 / 450) loss:0.202315
+(Iteration 225 / 450) loss:0.200404
+(Iteration 270 / 450) loss:0.215017
+(Iteration 315 / 450) loss:0.210971
+(Iteration 360 / 450) loss:0.232002
+(Iteration 405 / 450) loss:0.200897
+validate accuracy: 0.238
+(Epoch 7 / 40)
+(Iteration 0 / 450) loss:0.21409
+(Iteration 45 / 450) loss:0.204171
+(Iteration 90 / 450) loss:0.216809
+(Iteration 135 / 450) loss:0.207182
+(Iteration 180 / 450) loss:0.201055
+(Iteration 225 / 450) loss:0.197987
+(Iteration 270 / 450) loss:0.212591
+(Iteration 315 / 450) loss:0.207592
+(Iteration 360 / 450) loss:0.230107
+(Iteration 405 / 450) loss:0.197496
+validate accuracy: 0.2442
+(Epoch 8 / 40)
+(Iteration 0 / 450) loss:0.21341
+(Iteration 45 / 450) loss:0.203054
+(Iteration 90 / 450) loss:0.21485
+(Iteration 135 / 450) loss:0.206738
+(Iteration 180 / 450) loss:0.199477
+(Iteration 225 / 450) loss:0.196378
+(Iteration 270 / 450) loss:0.209378
+(Iteration 315 / 450) loss:0.204717
+(Iteration 360 / 450) loss:0.228277
+(Iteration 405 / 450) loss:0.195118
+validate accuracy: 0.2484
+(Epoch 9 / 40)
+(Iteration 0 / 450) loss:0.212656
+(Iteration 45 / 450) loss:0.200688
+(Iteration 90 / 450) loss:0.21196
+(Iteration 135 / 450) loss:0.205314
+(Iteration 180 / 450) loss:0.198006
+(Iteration 225 / 450) loss:0.194985
+(Iteration 270 / 450) loss:0.206772
+(Iteration 315 / 450) loss:0.203261
+(Iteration 360 / 450) loss:0.227271
+(Iteration 405 / 450) loss:0.192174
+validate accuracy: 0.254
+(Epoch 10 / 40)
+(Iteration 0 / 450) loss:0.212006
+(Iteration 45 / 450) loss:0.198599
+(Iteration 90 / 450) loss:0.208819
+(Iteration 135 / 450) loss:0.203737
+(Iteration 180 / 450) loss:0.19716
+(Iteration 225 / 450) loss:0.193532
+(Iteration 270 / 450) loss:0.203469
+(Iteration 315 / 450) loss:0.202002
+(Iteration 360 / 450) loss:0.224884
+(Iteration 405 / 450) loss:0.189362
+validate accuracy: 0.2644
+(Epoch 11 / 40)
+(Iteration 0 / 450) loss:0.21005
+(Iteration 45 / 450) loss:0.196181
+(Iteration 90 / 450) loss:0.206349
+(Iteration 135 / 450) loss:0.201198
+(Iteration 180 / 450) loss:0.195796
+(Iteration 225 / 450) loss:0.191764
+(Iteration 270 / 450) loss:0.202643
+(Iteration 315 / 450) loss:0.200817
+(Iteration 360 / 450) loss:0.222748
+(Iteration 405 / 450) loss:0.187464
+validate accuracy: 0.268
+(Epoch 12 / 40)
+(Iteration 0 / 450) loss:0.208138
+(Iteration 45 / 450) loss:0.195165
+(Iteration 90 / 450) loss:0.204348
+(Iteration 135 / 450) loss:0.200118
+(Iteration 180 / 450) loss:0.194079
+(Iteration 225 / 450) loss:0.190297
+(Iteration 270 / 450) loss:0.20205
+(Iteration 315 / 450) loss:0.1987
+(Iteration 360 / 450) loss:0.221473
+(Iteration 405 / 450) loss:0.185907
+validate accuracy: 0.268
+(Epoch 13 / 40)
+(Iteration 0 / 450) loss:0.206832
+(Iteration 45 / 450) loss:0.192779
+(Iteration 90 / 450) loss:0.202913
+(Iteration 135 / 450) loss:0.199029
+(Iteration 180 / 450) loss:0.192752
+(Iteration 225 / 450) loss:0.18956
+(Iteration 270 / 450) loss:0.200698
+(Iteration 315 / 450) loss:0.197361
+(Iteration 360 / 450) loss:0.220738
+(Iteration 405 / 450) loss:0.185289
+validate accuracy: 0.2718
+(Epoch 14 / 40)
+(Iteration 0 / 450) loss:0.205334
+(Iteration 45 / 450) loss:0.191422
+(Iteration 90 / 450) loss:0.201442
+(Iteration 135 / 450) loss:0.198445
+(Iteration 180 / 450) loss:0.191214
+(Iteration 225 / 450) loss:0.188478
+(Iteration 270 / 450) loss:0.199385
+(Iteration 315 / 450) loss:0.196032
+(Iteration 360 / 450) loss:0.220013
+(Iteration 405 / 450) loss:0.184893
+validate accuracy: 0.2764
+(Epoch 15 / 40)
+(Iteration 0 / 450) loss:0.205306
+(Iteration 45 / 450) loss:0.190353
+(Iteration 90 / 450) loss:0.200495
+(Iteration 135 / 450) loss:0.1976
+(Iteration 180 / 450) loss:0.190039
+(Iteration 225 / 450) loss:0.187635
+(Iteration 270 / 450) loss:0.197881
+(Iteration 315 / 450) loss:0.19501
+(Iteration 360 / 450) loss:0.218563
+(Iteration 405 / 450) loss:0.183722
+validate accuracy: 0.2774
+(Epoch 16 / 40)
+(Iteration 0 / 450) loss:0.205011
+(Iteration 45 / 450) loss:0.18838
+(Iteration 90 / 450) loss:0.199515
+(Iteration 135 / 450) loss:0.197229
+(Iteration 180 / 450) loss:0.188677
+(Iteration 225 / 450) loss:0.186985
+(Iteration 270 / 450) loss:0.197352
+(Iteration 315 / 450) loss:0.194
+(Iteration 360 / 450) loss:0.217542
+(Iteration 405 / 450) loss:0.182572
+validate accuracy: 0.2802
+(Epoch 17 / 40)
+(Iteration 0 / 450) loss:0.204073
+(Iteration 45 / 450) loss:0.187458
+(Iteration 90 / 450) loss:0.198522
+(Iteration 135 / 450) loss:0.196826
+(Iteration 180 / 450) loss:0.187827
+(Iteration 225 / 450) loss:0.186299
+(Iteration 270 / 450) loss:0.19701
+(Iteration 315 / 450) loss:0.193223
+(Iteration 360 / 450) loss:0.216396
+(Iteration 405 / 450) loss:0.182245
+validate accuracy: 0.2826
+(Epoch 18 / 40)
+(Iteration 0 / 450) loss:0.202901
+(Iteration 45 / 450) loss:0.186429
+(Iteration 90 / 450) loss:0.197422
+(Iteration 135 / 450) loss:0.196378
+(Iteration 180 / 450) loss:0.186868
+(Iteration 225 / 450) loss:0.185144
+(Iteration 270 / 450) loss:0.195529
+(Iteration 315 / 450) loss:0.192173
+(Iteration 360 / 450) loss:0.215378
+(Iteration 405 / 450) loss:0.181279
+validate accuracy: 0.2876
+(Epoch 19 / 40)
+(Iteration 0 / 450) loss:0.20193
+(Iteration 45 / 450) loss:0.185781
+(Iteration 90 / 450) loss:0.196951
+(Iteration 135 / 450) loss:0.196118
+(Iteration 180 / 450) loss:0.186145
+(Iteration 225 / 450) loss:0.184392
+(Iteration 270 / 450) loss:0.194893
+(Iteration 315 / 450) loss:0.19126
+(Iteration 360 / 450) loss:0.214379
+(Iteration 405 / 450) loss:0.180312
+validate accuracy: 0.2882
+(Epoch 20 / 40)
+(Iteration 0 / 450) loss:0.201329
+(Iteration 45 / 450) loss:0.184949
+(Iteration 90 / 450) loss:0.196656
+(Iteration 135 / 450) loss:0.195249
+(Iteration 180 / 450) loss:0.185378
+(Iteration 225 / 450) loss:0.184002
+(Iteration 270 / 450) loss:0.194254
+(Iteration 315 / 450) loss:0.190403
+(Iteration 360 / 450) loss:0.213275
+(Iteration 405 / 450) loss:0.179316
+validate accuracy: 0.2934
+(Epoch 21 / 40)
+(Iteration 0 / 450) loss:0.200814
+(Iteration 45 / 450) loss:0.184149
+(Iteration 90 / 450) loss:0.196097
+(Iteration 135 / 450) loss:0.194878
+(Iteration 180 / 450) loss:0.18479
+(Iteration 225 / 450) loss:0.183302
+(Iteration 270 / 450) loss:0.19403
+(Iteration 315 / 450) loss:0.18939
+(Iteration 360 / 450) loss:0.212539
+(Iteration 405 / 450) loss:0.178837
+validate accuracy: 0.2982
+(Epoch 22 / 40)
+(Iteration 0 / 450) loss:0.200069
+(Iteration 45 / 450) loss:0.183015
+(Iteration 90 / 450) loss:0.195965
+(Iteration 135 / 450) loss:0.194324
+(Iteration 180 / 450) loss:0.184456
+(Iteration 225 / 450) loss:0.183088
+(Iteration 270 / 450) loss:0.19367
+(Iteration 315 / 450) loss:0.188283
+(Iteration 360 / 450) loss:0.210883
+(Iteration 405 / 450) loss:0.178397
+validate accuracy: 0.3002
+(Epoch 23 / 40)
+(Iteration 0 / 450) loss:0.199501
+(Iteration 45 / 450) loss:0.18228
+(Iteration 90 / 450) loss:0.195126
+(Iteration 135 / 450) loss:0.194004
+(Iteration 180 / 450) loss:0.183695
+(Iteration 225 / 450) loss:0.182194
+(Iteration 270 / 450) loss:0.193171
+(Iteration 315 / 450) loss:0.187715
+(Iteration 360 / 450) loss:0.209887
+(Iteration 405 / 450) loss:0.177569
+validate accuracy: 0.3022
+(Epoch 24 / 40)
+(Iteration 0 / 450) loss:0.199144
+(Iteration 45 / 450) loss:0.181445
+(Iteration 90 / 450) loss:0.194808
+(Iteration 135 / 450) loss:0.193444
+(Iteration 180 / 450) loss:0.183198
+(Iteration 225 / 450) loss:0.181896
+(Iteration 270 / 450) loss:0.192686
+(Iteration 315 / 450) loss:0.187012
+(Iteration 360 / 450) loss:0.208931
+(Iteration 405 / 450) loss:0.177034
+validate accuracy: 0.3048
+(Epoch 25 / 40)
+(Iteration 0 / 450) loss:0.199001
+(Iteration 45 / 450) loss:0.180725
+(Iteration 90 / 450) loss:0.194287
+(Iteration 135 / 450) loss:0.192887
+(Iteration 180 / 450) loss:0.182761
+(Iteration 225 / 450) loss:0.181144
+(Iteration 270 / 450) loss:0.192695
+(Iteration 315 / 450) loss:0.186881
+(Iteration 360 / 450) loss:0.208331
+(Iteration 405 / 450) loss:0.176579
+validate accuracy: 0.305
+(Epoch 26 / 40)
+(Iteration 0 / 450) loss:0.198786
+(Iteration 45 / 450) loss:0.180368
+(Iteration 90 / 450) loss:0.193934
+(Iteration 135 / 450) loss:0.192615
+(Iteration 180 / 450) loss:0.182037
+(Iteration 225 / 450) loss:0.180628
+(Iteration 270 / 450) loss:0.192111
+(Iteration 315 / 450) loss:0.186143
+(Iteration 360 / 450) loss:0.207856
+(Iteration 405 / 450) loss:0.176192
+validate accuracy: 0.305
+(Epoch 27 / 40)
+(Iteration 0 / 450) loss:0.198435
+(Iteration 45 / 450) loss:0.17987
+(Iteration 90 / 450) loss:0.193124
+(Iteration 135 / 450) loss:0.191898
+(Iteration 180 / 450) loss:0.181436
+(Iteration 225 / 450) loss:0.180151
+(Iteration 270 / 450) loss:0.191635
+(Iteration 315 / 450) loss:0.185688
+(Iteration 360 / 450) loss:0.20716
+(Iteration 405 / 450) loss:0.175741
+validate accuracy: 0.3052
+(Epoch 28 / 40)
+(Iteration 0 / 450) loss:0.197924
+(Iteration 45 / 450) loss:0.179573
+(Iteration 90 / 450) loss:0.192498
+(Iteration 135 / 450) loss:0.19137
+(Iteration 180 / 450) loss:0.180946
+(Iteration 225 / 450) loss:0.1797
+(Iteration 270 / 450) loss:0.191456
+(Iteration 315 / 450) loss:0.185022
+(Iteration 360 / 450) loss:0.206702
+(Iteration 405 / 450) loss:0.1751
+validate accuracy: 0.3086
+(Epoch 29 / 40)
+(Iteration 0 / 450) loss:0.197516
+(Iteration 45 / 450) loss:0.178805
+(Iteration 90 / 450) loss:0.192493
+(Iteration 135 / 450) loss:0.191042
+(Iteration 180 / 450) loss:0.180434
+(Iteration 225 / 450) loss:0.179265
+(Iteration 270 / 450) loss:0.191095
+(Iteration 315 / 450) loss:0.184625
+(Iteration 360 / 450) loss:0.205783
+(Iteration 405 / 450) loss:0.174722
+validate accuracy: 0.3084
+(Epoch 30 / 40)
+(Iteration 0 / 450) loss:0.197269
+(Iteration 45 / 450) loss:0.178912
+(Iteration 90 / 450) loss:0.19242
+(Iteration 135 / 450) loss:0.190394
+(Iteration 180 / 450) loss:0.180206
+(Iteration 225 / 450) loss:0.17871
+(Iteration 270 / 450) loss:0.190871
+(Iteration 315 / 450) loss:0.183993
+(Iteration 360 / 450) loss:0.20526
+(Iteration 405 / 450) loss:0.173983
+validate accuracy: 0.3094
+(Epoch 31 / 40)
+(Iteration 0 / 450) loss:0.196957
+(Iteration 45 / 450) loss:0.178308
+(Iteration 90 / 450) loss:0.192274
+(Iteration 135 / 450) loss:0.190049
+(Iteration 180 / 450) loss:0.179913
+(Iteration 225 / 450) loss:0.178308
+(Iteration 270 / 450) loss:0.190562
+(Iteration 315 / 450) loss:0.183467
+(Iteration 360 / 450) loss:0.204435
+(Iteration 405 / 450) loss:0.1736
+validate accuracy: 0.3098
+(Epoch 32 / 40)
+(Iteration 0 / 450) loss:0.196444
+(Iteration 45 / 450) loss:0.177718
+(Iteration 90 / 450) loss:0.192054
+(Iteration 135 / 450) loss:0.18966
+(Iteration 180 / 450) loss:0.17961
+(Iteration 225 / 450) loss:0.177788
+(Iteration 270 / 450) loss:0.190208
+(Iteration 315 / 450) loss:0.183235
+(Iteration 360 / 450) loss:0.20362
+(Iteration 405 / 450) loss:0.173343
+validate accuracy: 0.3124
+(Epoch 33 / 40)
+(Iteration 0 / 450) loss:0.196055
+(Iteration 45 / 450) loss:0.177434
+(Iteration 90 / 450) loss:0.191748
+(Iteration 135 / 450) loss:0.189065
+(Iteration 180 / 450) loss:0.179388
+(Iteration 225 / 450) loss:0.177296
+(Iteration 270 / 450) loss:0.189894
+(Iteration 315 / 450) loss:0.182885
+(Iteration 360 / 450) loss:0.202856
+(Iteration 405 / 450) loss:0.173027
+validate accuracy: 0.3154
+(Epoch 34 / 40)
+(Iteration 0 / 450) loss:0.195866
+(Iteration 45 / 450) loss:0.176723
+(Iteration 90 / 450) loss:0.191423
+(Iteration 135 / 450) loss:0.188715
+(Iteration 180 / 450) loss:0.178859
+(Iteration 225 / 450) loss:0.176915
+(Iteration 270 / 450) loss:0.189799
+(Iteration 315 / 450) loss:0.182534
+(Iteration 360 / 450) loss:0.202339
+(Iteration 405 / 450) loss:0.172658
+validate accuracy: 0.3166
+(Epoch 35 / 40)
+(Iteration 0 / 450) loss:0.19549
+(Iteration 45 / 450) loss:0.176496
+(Iteration 90 / 450) loss:0.191237
+(Iteration 135 / 450) loss:0.188363
+(Iteration 180 / 450) loss:0.178462
+(Iteration 225 / 450) loss:0.176617
+(Iteration 270 / 450) loss:0.189516
+(Iteration 315 / 450) loss:0.18226
+(Iteration 360 / 450) loss:0.201663
+(Iteration 405 / 450) loss:0.172289
+validate accuracy: 0.3174
+(Epoch 36 / 40)
+(Iteration 0 / 450) loss:0.195092
+(Iteration 45 / 450) loss:0.175885
+(Iteration 90 / 450) loss:0.19095
+(Iteration 135 / 450) loss:0.187999
+(Iteration 180 / 450) loss:0.178204
+(Iteration 225 / 450) loss:0.176261
+(Iteration 270 / 450) loss:0.189442
+(Iteration 315 / 450) loss:0.182164
+(Iteration 360 / 450) loss:0.200945
+(Iteration 405 / 450) loss:0.171958
+validate accuracy: 0.3168
+(Epoch 37 / 40)
+(Iteration 0 / 450) loss:0.194976
+(Iteration 45 / 450) loss:0.175464
+(Iteration 90 / 450) loss:0.190655
+(Iteration 135 / 450) loss:0.187502
+(Iteration 180 / 450) loss:0.177608
+(Iteration 225 / 450) loss:0.176004
+(Iteration 270 / 450) loss:0.189147
+(Iteration 315 / 450) loss:0.181855
+(Iteration 360 / 450) loss:0.200379
+(Iteration 405 / 450) loss:0.171822
+validate accuracy: 0.3186
+(Epoch 38 / 40)
+(Iteration 0 / 450) loss:0.194694
+(Iteration 45 / 450) loss:0.175022
+(Iteration 90 / 450) loss:0.190603
+(Iteration 135 / 450) loss:0.187155
+(Iteration 180 / 450) loss:0.177443
+(Iteration 225 / 450) loss:0.175856
+(Iteration 270 / 450) loss:0.189189
+(Iteration 315 / 450) loss:0.181679
+(Iteration 360 / 450) loss:0.199695
+(Iteration 405 / 450) loss:0.171598
+validate accuracy: 0.321
+(Epoch 39 / 40)
+(Iteration 0 / 450) loss:0.194578
+(Iteration 45 / 450) loss:0.174361
+(Iteration 90 / 450) loss:0.190115
+(Iteration 135 / 450) loss:0.186751
+(Iteration 180 / 450) loss:0.176985
+(Iteration 225 / 450) loss:0.175631
+(Iteration 270 / 450) loss:0.188813
+(Iteration 315 / 450) loss:0.18129
+(Iteration 360 / 450) loss:0.199122
+(Iteration 405 / 450) loss:0.171312
+validate accuracy: 0.322

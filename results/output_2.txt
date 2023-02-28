@@ -1,0 +1,16 @@
+2 hidden layer: 100
+learning rate: 0.01
+
+loss: 35.1274
+loss: 16.3552
+loss: 14.6612
+loss: 13.7423
+loss: 12.9698
+loss: 12.314
+loss: 11.752
+loss: 11.2661
+loss: 10.8422
+loss: 10.4656
+loss: 10.1263
+loss: 9.81859
+loss: 9.53775

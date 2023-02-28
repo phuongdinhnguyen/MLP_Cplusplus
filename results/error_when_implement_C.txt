@@ -1,0 +1,7 @@
+- converting formulas to code: not as easy as Python
+(flexible, varities of variables/data structure, functions)
+(C is very strict in defining types and variables)
+-> thank god we have debugger
+
+- memory hungry (using ~3gb of RAM) -> needs more optimization
+- nan numbers -> caused by softmax  -> normalize softmax

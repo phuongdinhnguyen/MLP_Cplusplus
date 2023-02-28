@@ -128,3 +128,37 @@ void ReadDataCIFAR10(Matrix& inputLayer, vector <int>& trainLabel, int numFiles,
     }
     std::copy(data.begin(), data.end(), inputLayer.data.begin());
 }
+
+string CIFAR10_test = "./cifar-10/test_batch.bin";
+void ReadDataCIFAR10Test(Matrix& testData, vector <int>& testLabel)
+{
+    int numberOfData = 10000;
+    int dim = 3072;
+    ifstream file3;
+
+    testData.data.resize(0);
+    testData.row = numberOfData;
+    testData.col = dim;
+
+    vector <double> data;
+    vector <int> labels;
+    file3.open(CIFAR10_test, ios::binary);
+    if (file3.is_open())
+    {
+        cout << "open and reading test data... \n";
+        unsigned char label = 0;
+        for (int cnt = 0; cnt < numberOfData; cnt++)
+        {
+            file3.read((char*)&label, sizeof(label));
+            labels.push_back((int)label);
+            for (int i = 0; i < dim; ++i)
+            {
+                unsigned char pixel = 0;
+                file3.read((char*)&pixel, sizeof(pixel));
+                data.push_back((double)pixel / 255.0);
+            }
+        }
+    }
+    file3.close();
+    std::copy(data.begin(), data.end(), testData.data.begin());
+}

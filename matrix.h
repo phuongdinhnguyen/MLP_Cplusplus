@@ -51,12 +51,12 @@ namespace matrix
     {
         int maxLength = 10000;
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        static std::default_random_engine generator(45);
+        static std::default_random_engine generator(90);
         std::uniform_int_distribution<int> distribution(0, maxLength);
 
         for (int i = 0; i < x.col * x.row; i++)
         {
-            x.data[i] = distribution(generator) * 1.0 / maxLength - 0.5;
+            x.data[i] = (distribution(generator) * 1.0 / maxLength - 0.5) / 100;
         }
     }
 
@@ -71,6 +71,33 @@ namespace matrix
             }
             cout << endl;
         }
+    }
+
+    void showMatrix(Matrix x, int col)
+    {
+        for (int i = 0; i < x.row; i++)
+        {
+            cout << "Row " << i << ":\t";
+            for (int j = 0; j < col; j++)
+            {
+                cout << x.at(i, j) << " ";
+            }
+            cout << endl;
+        }
+    }
+
+    void checkMatrix(Matrix x)
+    {
+        bool flag = 1;
+        for (int i = 0; i < x.row * x.col; i++)
+        {
+            if (isnan(x.data[i]) || isinf(x.data[i]))
+            {
+                cout << "NaN / INF found!\n";
+                return;
+            }
+        }
+        cout << "good matrix!\n";
     }
 
     void matrixSize(Matrix x)
@@ -90,7 +117,10 @@ namespace matrix
         for (i = 0; i < x.row; i++)
         {
             for (j = 0; j < x.col; j++)
-                res.data[j * res.col + i] = x.at(i, j);
+            {
+                res.data[j * res.col + i] = isnan(x.at(i, j)) ? 0 : x.at(i, j);
+                //cout << i << " " << j << endl;
+            }
         }
 #if DEBUG
         auto endTime = std::chrono::steady_clock::now();
@@ -124,9 +154,10 @@ namespace matrix
                 for (j = 0; j < res.col; j++) {
                     double dot  = 0;
                     for (k = 0; k < x2_t.col; k++) {
-                        dot += x1.at(i,k)*x2_t.at(j,k);
+                        double tmp = x1.at(i, k) * x2_t.at(j, k);
+                        dot += isnan(tmp) ? 0 : tmp;
                     } 
-                    res.data[i * (res.col) + j] = dot;
+                    res.data[i * (res.col) + j] = isnan(dot) ? 0 : dot;
                 }
             }
         }
@@ -168,7 +199,11 @@ namespace matrix
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int i = 0; i < res.row; i++)
             for (int j = 0; j < res.col; j++)
+            {
                 res.data[i * res.col + j] = x1.at(i, j) - x2.at(i, j);
+                res.data[i * res.col + j] = isnan(res.data[i * res.col + j]) ? 0 : res.data[i * res.col + j];
+            }
+                
 
         return res;
     }
@@ -180,7 +215,7 @@ namespace matrix
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int i = 0; i < res.col * res.row; i++)
         {
-            res.data[i] = res.data[i] / num;
+            res.data[i] = (isnan(res.data[i]) ? 0 : res.data[i]) / num;
         }
         return res;
     }
@@ -192,7 +227,8 @@ namespace matrix
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int i = 0; i < res.col * res.row; i++)
         {
-            res.data[i] = res.data[i] * num;
+            double tmp = res.data[i] * num;
+            res.data[i] = isnan(tmp) ? 0 : tmp;
         }
         return res;
     }
@@ -204,7 +240,21 @@ namespace matrix
 #pragma omp parallel for num_threads(NUM_THREAD)
         for (int i = 0; i < res.col * res.row; i++)
         {
-            res.data[i] = res.data[i] - num;
+            double tmp = res.data[i] - num;
+            res.data[i] = isnan(tmp) ? 0 : tmp;
+        }
+        return res;
+    }
+
+    // plus all matrix with a number
+    Matrix plusAll(Matrix x, double num)
+    {
+        Matrix res = x;
+#pragma omp parallel for num_threads(NUM_THREAD)
+        for (int i = 0; i < res.col * res.row; i++)
+        {
+            res.data[i] = res.data[i] + num;
+            //if (isnan(res.data[i])) res.data[i] = 0;
         }
         return res;
     }
@@ -217,6 +267,7 @@ namespace matrix
         for (int i = 0; i < res.col * res.row; i++)
         {
             res.data[i] = x.data[i] * a.data[i];
+            //if (isnan(res.data[i])) res.data[i] = 0;
         }
         return res;
     }
@@ -234,7 +285,7 @@ namespace matrix
             double sum = 0;
             for (int colIdx = 0; colIdx < x.col; colIdx++)
             {
-                sum += x.at(rowIdx, colIdx);
+                sum += isnan(x.at(rowIdx, colIdx)) ? 0 : x.at(rowIdx, colIdx);
             }
             res.data[rowIdx] = sum;
         }
@@ -247,10 +298,89 @@ namespace matrix
     {
         double sum = 0;
         for (int i = 0; i < x.col * x.row; i++)
-            sum += x.data[i];
-
+            sum += isnan(x.data[i]) ? 0 : x.data[i];
+        //cout << "sum = " << sum << endl;
         return sum;
     }
 
- 
+    Matrix squareAllMatrix(Matrix x)
+    {
+        Matrix res = x;
+#pragma omp parallel for num_threads(NUM_THREAD)
+        for (int i = 0; i < res.col * res.row; i++)
+        {
+            double tmp = res.data[i] * res.data[i];
+            res.data[i] = isnan(tmp) ? 0 : tmp;
+        }
+        return res;
+    }
+
+    Matrix sqrtAllMatrix(Matrix x)
+    {
+        Matrix res = x;
+#pragma omp parallel for num_threads(NUM_THREAD)
+        for (int i = 0; i < res.col * res.row; i++)
+        {
+            res.data[i] = sqrt(res.data[i]);
+            //if (isnan(res.data[i])) res.data[i] = 0;
+        }
+        return res;
+    }
+
+    Matrix onesMatrix(int nrow, int ncol)
+    {
+        Matrix res;
+        res.initSize(nrow, ncol);
+#pragma omp parallel for num_threads(NUM_THREAD)
+        for (int i = 0; i < res.col * res.row; i++)
+        {
+            res.data[i] = 1;
+            //if (isnan(res.data[i])) res.data[i] = 0;
+        }
+        return res;
+    }
+
+    Matrix divMatrixMatrix(Matrix x, Matrix a)
+    {
+        Matrix res = x;
+#pragma omp parallel for num_threads(NUM_THREAD)
+        for (int i = 0; i < res.col * res.row; i++)
+        {
+            res.data[i] = x.data[i] / a.data[i];
+            //if (isnan(res.data[i])) res.data[i] = 0;
+        }
+        return res;
+    }
+
+    Matrix normalize(Matrix x)
+    {
+        Matrix res = x;
+        double max = x.data[0];
+#pragma omp parallel for num_threads(NUM_THREAD)
+        for (int colIdx = 0; colIdx < x.col; colIdx++)
+        {
+            //double max = x.at(0, colIdx);
+            //double sum = 0;
+            for (int rowIdx = 0; rowIdx < x.row; rowIdx++)
+            {
+                if (max < x.at(rowIdx, colIdx)) max = x.at(rowIdx, colIdx);
+                //sum += x.at(rowIdx, colIdx);
+            }
+
+            for (int rowIdx = 0; rowIdx < x.row; rowIdx++)
+            {
+                res.data[rowIdx * res.col + colIdx] = x.data[rowIdx * res.col + colIdx] - max;
+                //res.data[rowIdx * res.col + colIdx] /= sum;
+                //res.data[rowIdx * res.col + colIdx] = x.data[rowIdx * res.col + colIdx] / 100;
+            }
+        }
+
+        //for (int i = 0; i < x.col * x.row; i++)
+        //{
+        //    res.data[i] = x.data[i] / 100;
+        //    res.data[i] = x.data[i] - max;
+        //}
+        //cout << "max isL " << max << endl;
+        return res;
+    }
 }

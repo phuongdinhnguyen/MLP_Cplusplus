@@ -8,6 +8,7 @@ int convertToLabel(vector<double>data)
 {
     int pos = 0;
     double max = data[0];
+    //cout << "max = " << data.size() << endl;
     for (int i = 1; i < data.size(); i++)
     {
         if (data[i] > max)
@@ -48,6 +49,7 @@ double CheckAccuracy(Matrix outputLayer, vector <int> trainLabel, int numData)
         }
         totalAcc += (trainLabel[colIdx] == convertToLabel(data));
     }
-    cout << "accuracy: " << totalAcc / numData;
-    return totalAcc / numData;
+    //cout << numData << endl;
+    //cout << "accuracy: " << totalAcc / numData;
+    return totalAcc;
 }

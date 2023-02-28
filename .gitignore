@@ -1,4 +1,3 @@
 *.exe
-matrixTranspose.cpp
-test.cpp
 .vscode
+test

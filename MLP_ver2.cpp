@@ -3,6 +3,7 @@
 #include "readData.h"
 #include "utils.h"
 
+
 #include <chrono>
 #include <random>
 #include <algorithm>
@@ -26,9 +27,7 @@ Matrix plusBias(Matrix x, Matrix b)
 Matrix ReLU(Matrix x)
 {
     Matrix res = x;
-    //matrix::matrixSize(res);
-    //cout << res.at(100, 100) << endl;
-#pragma omp parallel for num_threads(NUM_THREAD)
+//#pragma omp parallel for num_threads(NUM_THREAD)
     for (int i = 0; i < res.col * res.row; i++)
         res.data[i] = (res.data[i] > 0) ? res.data[i] : 0;
 
@@ -46,29 +45,37 @@ Matrix deriv_ReLU(Matrix x)
 }
 
 Matrix Softmax(Matrix x)
-{
+{ 
+    Matrix norm_x = matrix::normalize(x);
     Matrix res = x;
     vector <double> expSum;
 
-    for (int colIdx = 0; colIdx < x.col; colIdx++)
+    for (int colIdx = 0; colIdx < norm_x.col; colIdx++)
     {
         double sum = 0;
-        for (int rowIdx = 0; rowIdx < x.row; rowIdx++)
+        for (int rowIdx = 0; rowIdx < norm_x.row; rowIdx++)
         {
-            sum += exp(x.at(rowIdx, colIdx));
+            //double tmp = exp(norm_x.at(rowIdx, colIdx));
+            sum += exp(norm_x.at(rowIdx, colIdx));
         }
         expSum.push_back(sum);
         //cout << sum << endl;
     }
-#pragma omp parallel for num_threads(NUM_THREAD)
-    for (int colIdx = 0; colIdx < x.col; colIdx++)
+//#pragma omp parallel for num_threads(NUM_THREAD)
+    for (int colIdx = 0; colIdx < norm_x.col; colIdx++)
     {
-        for (int rowIdx = 0; rowIdx < x.row; rowIdx++)
+        for (int rowIdx = 0; rowIdx < norm_x.row; rowIdx++)
         {
-            res.data[rowIdx * res.col + colIdx] = exp(res.at(rowIdx, colIdx)) / expSum[colIdx];
+            res.data[rowIdx * norm_x.col + colIdx] = exp(norm_x.at(rowIdx, colIdx)) / expSum[colIdx];      
+            if (isnan(res.data[rowIdx * norm_x.col + colIdx]))
+            {
+                cout << "x=" << norm_x.at(rowIdx, colIdx) << endl;
+                cout << "sum=" << expSum[colIdx] << endl;
+            }
+
         }
     }
-
+    
     return res;
 }
 
@@ -77,6 +84,13 @@ enum ActivationFunction
     AF_none = -1,
     AF_ReLU = 0,
     AF_Softmax = 1
+};
+
+enum optimizer
+{
+    GD = 0,
+    GD_MOMENTUM = 1,
+    RMSPROP = 2
 };
 
 class Layer
@@ -95,11 +109,13 @@ public:
     void setLayerPos(int _layerPos){layerPos = _layerPos; }
 
     Matrix W, b, A, Z;
-    Matrix dZ, dW, dA;
+    Matrix dZ, dW, db, dA;
     Matrix prev_dW;
-    double db;
-    double prev_db;
-       
+    Matrix prev_db;
+
+    Matrix prev_v_dW; // for RMSProp
+    Matrix prev_v_db;
+
     // If this is first layer -> input layer
     void setInput(Matrix inputLayer)
         {A = matrix::transpose(inputLayer);}
@@ -111,10 +127,12 @@ public:
         W.initSize(numNodes, numInput);
         b.initSize(numNodes, 1);
         matrix::RandMatrix(W);
-        matrix::RandMatrix(b);
+        //matrix::RandMatrix(b);
 
+        prev_v_dW.initSize(numNodes, numInput);
+        prev_v_db.initSize(numNodes, 1);
         prev_dW.initSize(numNodes, numInput);
-        prev_db = 0;
+        prev_db.initSize(numNodes, 1);
     }
 
     void Forward(Layer prevLayer)
@@ -154,27 +172,65 @@ public:
         {
             dZ = matrix::mulAllMatrix(nextLayer.dA,deriv_ReLU(Z));
         }
-        
+
+        db = matrix::sumRow(dZ);
+        //db = matrix::divAll(db, numData);
+
         Matrix prevA_T = matrix::transpose(prevLayer.A);
-        Matrix dZdotA = matrix::matrix_dot(dZ, prevA_T);
-        dW = matrix::divAll((dZdotA), numData);
-        db = matrix::sumAllMatrix(dZ) / numData;
+        dW = matrix::matrix_dot(dZ, prevA_T);
+        //dW = matrix::divAll(dW, numData);
+
         Matrix W_T = matrix::transpose(W);
         dA = matrix::matrix_dot(W_T, dZ);
     }
-
-    void update(double learningRate)
+  
+    void update(double learningRate, optimizer opt)
     {
-        double momentum = 0.1;
-        // Update weights and bias, with learning rate
+        // SGD-momentum
         
-        W = matrix::matrix_minus(W, matrix::mulAll(dW, learningRate));
-        b = matrix::minusAll(b, learningRate * db);
+        // Update weights and bias, with learning rate
+        if (opt == GD || opt == GD_MOMENTUM)
+        {
+            if (opt == GD)
+            {
+                //cout << "Running GD: " << endl;
+                W = matrix::matrix_minus(W, matrix::mulAll(dW, learningRate));
+                b = matrix::matrix_minus(b, matrix::mulAll(db, learningRate));
+            }
 
-        W = matrix::matrix_minus(W, prev_dW);
-        b = matrix::minusAll(b, prev_db);
-        prev_dW = matrix::matrix_plus(dW, matrix::mulAll(prev_dW, momentum));
-        prev_db = db + prev_db * momentum;
+            double momentum = 0.9;
+            if (opt == GD_MOMENTUM)
+            {
+                prev_dW = matrix::matrix_minus(matrix::mulAll(prev_dW, momentum), matrix::mulAll(dW, learningRate));
+                prev_db = matrix::matrix_minus(matrix::mulAll(prev_db, momentum), matrix::mulAll(db, learningRate));
+
+                W = matrix::matrix_plus(W, prev_dW);
+                W = matrix::matrix_plus(b, prev_db);
+            }
+        }
+
+        // RMSProp
+        if (opt == RMSPROP)
+        {
+            double beta = 0.9;
+            double epsilon = 10e-8;
+            double alpha = 1e-4;
+            Matrix beta_v_dw = matrix::mulAll(prev_v_dW, beta);
+            Matrix dW_square = matrix::squareAllMatrix(dW);
+            Matrix v_dW = matrix::matrix_plus(beta_v_dw, matrix::mulAll(dW_square, (1 - beta)));
+
+            Matrix beta_v_db = matrix::mulAll(prev_v_db, beta);
+            Matrix db_square = matrix::squareAllMatrix(db);
+            Matrix v_db = matrix::matrix_plus(beta_v_db, matrix::mulAll(db_square, (1 - beta)));
+
+            Matrix tmpCalc = matrix::divMatrixMatrix(dW, matrix::plusAll(matrix::sqrtAllMatrix(v_dW), epsilon));
+
+            W = matrix::matrix_minus(W, matrix::mulAll(tmpCalc, alpha));
+
+            Matrix tmpCalc2 = matrix::divMatrixMatrix(db, matrix::plusAll(matrix::sqrtAllMatrix(v_db), epsilon));
+            b = matrix::matrix_minus(b, matrix::mulAll(tmpCalc2, alpha));
+        }
+        
     }
 };
 
@@ -200,9 +256,11 @@ public:
     Matrix validateData;
     vector <int> validateLabel;
 
-    int batchSize;
+    Matrix testData;
+    vector <int> testLabel;
 
-    
+    int batchSize;
+        
     vector <double> _inputLayer;
 
     int applySGD = 1;
@@ -237,21 +295,15 @@ public:
         // Extract validation
         if (doVal)
         {
-            int numValData = 5000;
+            int numValData = 1000;
             // extract validate data (pics)
             validateData.data.assign(inputLayer.data.end() - numValData * dataDim, inputLayer.data.end());
             validateData.row = numValData;
             validateData.col = dataDim;
 
             // delete last numbers of data already being used for validate
-            
-            //cout << "dataDim = " << dataDim << endl;
             int numInputData = layer[0].numData;
-            //cout << "num input data: " << numInputData << endl;
-            //cout << "input Layer size: " << inputLayer.data.size() << endl;
-            //cout << (numInputData - numValData) * dataDim << endl;
             inputLayer.data.resize((numInputData - numValData) * dataDim);
-            //cout << "input Layer size: " << inputLayer.data.size() << endl;
             inputLayer.row = numInputData - numValData;
 
             // edit first layer ~ input layer:
@@ -264,14 +316,13 @@ public:
             // delete last numbers of labels already being used for validate
             label.resize(numInputData - numValData);
         }
-        //random_shuffle(layer.begin(), layer.end());
     }
 
-    void updateParams(double learningRate)
+    void updateParams(double learningRate, optimizer opt)
     {
         for (int i = 1; i < numLayer() - 1; i++)
         {
-            layer[i].update(learningRate);
+            layer[i].update(learningRate, opt);
         }
     }
 
@@ -280,16 +331,12 @@ public:
         Matrix Y = OneHotCoding(_label, 10);
         double sum = 0;
         int size = Y.data.size();
-        
         for (int i = 0; i < Y.data.size(); i++)
         {
             sum += Y.data[i] * log(outputLayer.A.data[i]);
-            //file << sum << endl;
         }
         double res = -sum / size;
 
-        //file << "end!\n";
-        //cout << res << endl;
         return res;
     }
 
@@ -298,11 +345,13 @@ public:
         int posOutputLayer = numLayer() - 2;
         int inputDim = inputLayer.col;
         Layer originalInputLayer = layer[0];
+        double trainingAcc = 0;
         cout << "Number of data: " << originalInputLayer.numData << endl;
         for (int epoch = 0 ; epoch < numEpoch ; epoch++)
         {
-            cout << "(Epoch " << epoch << " / " << numEpoch << ")" << endl;
-            file << "(Epoch " << epoch << " / " << numEpoch << ")" << endl;
+            trainingAcc = 0;
+            cout << "(Epoch " << epoch << " / " << numEpoch - 1 << ")" << endl;
+            file << "(Epoch " << epoch << " / " << numEpoch - 1 << ")" << endl;
             //file << "epoch: " << epoch << endl;
             //int batch_size = originalInputLayer.numData;
             int batch_size = 100;
@@ -311,7 +360,6 @@ public:
             for (int batchIdx = 0; batchIdx < numBatch; batchIdx++)
             {
                 double batchLoss = 0;
-                //cout << ". ";
                 // Applying minibatch or batch or SGD: edit first layer
                 Matrix x;
                 x.data.assign(inputLayer.data.begin() + batchIdx * batch_size * inputDim, 
@@ -337,76 +385,77 @@ public:
                 }
 
                 // Update parameters
-                updateParams(learningRate);
-
-                // Check accuracy every 10 epochs
-                //if (epoch % 10 == 0)
-                //CheckAccuracy(layer[posOutputLayer].A, label, layer[0].numData);
+                updateParams(learningRate, RMSPROP);
 
                 batchLoss = loss(layer[posOutputLayer], label);
-                if (batchIdx % (numBatch / 10) == 0)
+                double acc = CheckAccuracy(layer[posOutputLayer].A, label, batch_size);
+                trainingAcc += acc;
+                //if (batchIdx % (numBatch / 10) == 0)
                 {
                     cout << "(Iteration " << batchIdx << " / " << numBatch << ") loss:" << batchLoss << endl;
                     file << "(Iteration " << batchIdx << " / " << numBatch << ") loss:" << batchLoss << endl;
                 }
-                //cout << "\nTotal loss:" << totalLoss << endl;
             }
-            //cout << "\nTotal loss:" << totalLoss << endl;
-            //file << "loss: " << totalLoss << endl;
       
             ////////////////// train accuracy/////////////////////////
-            // (temporary remove because using too much memory)
-            //cout << "train ";
-            //layer[0] = originalInputLayer;
-            //layer[0].A = matrix::transpose(layer[0].A);
-            //for (int i = 0; i < numLayer() - 2; i++)
-            //{
-            //    layer[i + 1].Forward(layer[i]);
-            //}
-            //CheckAccuracy(layer[posOutputLayer].A, label, layer[0].numData);
+            cout << "training accuracy: " << trainingAcc / Network::label.size() << endl;
+            file << "training accuracy: " << trainingAcc / Network::label.size() << endl;
 
             ////////////////// val accuracy  ///////////////////////////
-            cout << " val ";
             layer[0].A = matrix::transpose(validateData);
             for (int i = 0; i < numLayer() - 2; i++)
             {
                 layer[i + 1].Forward(layer[i]);
             }
             double valAcc = CheckAccuracy(layer[posOutputLayer].A, validateLabel, validateData.row);
-            file << "validate accuracy: " << valAcc << endl;
+            cout << "validate accuracy: " << valAcc / validateData.row << endl;
+            file << "validate accuracy: " << valAcc / validateData.row << endl;
+
             cout << "\n";
         }
 
+        readTestData();
+        cout << " test ";
+        layer[0].A = matrix::transpose(testData);
+        for (int i = 0; i < numLayer() - 2; i++)
+        {
+            layer[i + 1].Forward(layer[i]);
+        }
+        double valAcc = CheckAccuracy(layer[posOutputLayer].A, testLabel, testData.row);
+        file << "test accuracy: " << valAcc << " over " << 10000 << endl;
+        cout << "test accuracy: " << valAcc << " over " << 10000 << endl;
+        cout << "\n";
         
     }
-
-    
 
     void predict()
     {
         
     }
 
-    void readData(int numFiles, int numDataEachFile);
-
+    void readData(int numFiles, int numDataEachFile); //cifar10 only
+    void readTestData(); //cifar10 only
     // divide validation
 };
 
 int main()
 {
+    // TEST FUNCTION
+    //testingAllFunctions();
+      
     // Define new layer: Layer(number of input, number of layer's nodes, activation function)
 
     Network MLP;
-    //int numData = 60000;
+    //int numData = 5000;
     //int dataDim = 784;
     //ReadDataMNIST(MLP.inputLayer, MLP.label, numData);
     //MLP.setEpoch(50);
+    //MLP.setDataInputDim(dataDim);
     //MLP.addLayer(InputLayer(numData,dataDim,MLP.inputLayer));
     //MLP.addLayer(Layer(784, 100, AF_ReLU));
-    //MLP.addLayer(Layer(100, 50, AF_ReLU));
-    //MLP.addLayer(Layer(50, 10, AF_Softmax));
-    //MLP.initParams(0);
-    //MLP.setLearningRate(0.1);
+    //MLP.addLayer(Layer(100, 10, AF_Softmax));
+    //MLP.initParams(1);
+    //MLP.setLearningRate(0.01);
     //MLP.fit();
 
     
@@ -414,19 +463,18 @@ int main()
     int numFiles = 5;
     int numData = numFiles * numDataEachFile;
     int dataDim = 3072;
-    //ReadDataCIFAR10(MLP.inputLayer, MLP.label, numFiles, numDataEachFile);
     MLP.readData(numFiles, numDataEachFile);
-    MLP.setEpoch(40);
+    MLP.setEpoch(6);
     MLP.setDataInputDim(dataDim);
     MLP.addLayer(InputLayer(numData, dataDim, MLP.inputLayer));
-    MLP.addLayer(Layer(dataDim, 100, AF_ReLU));
-    MLP.addLayer(Layer(100, 100, AF_ReLU));
-    MLP.addLayer(Layer(100, 100, AF_ReLU));
+    MLP.addLayer(Layer(dataDim, 200, AF_ReLU));
     //MLP.addLayer(Layer(100, 100, AF_ReLU));
     //MLP.addLayer(Layer(100, 100, AF_ReLU));
-    MLP.addLayer(Layer(100, 10, AF_Softmax));
+    //MLP.addLayer(Layer(100, 100, AF_ReLU));
+    //MLP.addLayer(Layer(100, 100, AF_ReLU));
+    MLP.addLayer(Layer(200, 10, AF_Softmax));
     MLP.initParams(1);
-    MLP.setLearningRate(0.0001);
+    MLP.setLearningRate(1e-3);
     MLP.fit();
     
     cout << "program exited!" << endl;
@@ -452,7 +500,7 @@ void Network::readData(int numFiles, int numDataEachFile)
         file3.open(CIFAR10_file[file_idx], ios::binary);
         if (file3.is_open())
         {
-            cout << "file opened! \n";
+            cout << "open and reading traing file... \n";
             struct data;
             unsigned char _label = 0;
             for (int cnt = 0; cnt < numberOfData; cnt++)
@@ -474,6 +522,41 @@ void Network::readData(int numFiles, int numDataEachFile)
             }
         }
         file3.close();
+        cout << "done 1 file! \n";
     }
+    matrix::checkMatrix(inputLayer);
     cout << inputLayer.data.size() << endl;
+}
+
+void Network::readTestData()
+{
+    int numberOfData = 10000;
+    int dim = 3072;
+    ifstream file3;
+
+    testData.data.resize(numberOfData * dim);
+    testData.row = numberOfData;
+    testData.col = dim;
+
+    int cnt = 0;
+    file3.open(CIFAR10_test, ios::binary);
+    if (file3.is_open())
+    {
+        cout << "open and reading test data... \n";
+        unsigned char label = 0;
+        for (int i = 0; i < numberOfData; i++)
+        {
+            file3.read((char*)&label, sizeof(label));
+            testLabel.push_back((int)label);
+            for (int i = 0; i < dim; ++i)
+            {
+                unsigned char pixel = 0;
+                file3.read((char*)&pixel, sizeof(pixel));
+                //data.push_back((double)pixel / 255.0);
+                testData.data[cnt] = (double)pixel / 255.0;
+            }
+        }
+        cout << "done reading test data!\n";
+    }
+    file3.close();
 }
